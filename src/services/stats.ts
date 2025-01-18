@@ -1,5 +1,6 @@
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { User, Service, Request } from '@/types';
 
 export const fetchDashboardStats = async () => {
   try {
@@ -7,9 +8,9 @@ export const fetchDashboardStats = async () => {
     const servicesSnapshot = await getDocs(collection(db, 'services'));
     const requestsSnapshot = await getDocs(collection(db, 'requests'));
 
-    const users = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    const services = servicesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    const requests = requestsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const users = usersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as User));
+    const services = servicesSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Service));
+    const requests = requestsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Request));
 
     const totalUsers = users.length;
     const totalServices = services.length;
