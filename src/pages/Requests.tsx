@@ -6,6 +6,7 @@ import StatsCard from "@/components/dashboard/StatsCard";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { fetchRequests, updateRequestStatus } from "@/services/requests";
+import { Request } from "@/types";
 import { useToast } from "@/components/ui/use-toast";
 
 const Requests = () => {
@@ -99,7 +100,7 @@ const Requests = () => {
                       <Badge
                         variant={
                           request.status === 'completed'
-                            ? 'success'
+                            ? 'secondary'
                             : request.status === 'in-progress'
                             ? 'secondary'
                             : request.status === 'cancelled'
@@ -111,7 +112,7 @@ const Requests = () => {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={request.isPaid ? 'success' : 'warning'}>
+                      <Badge variant={request.isPaid ? 'secondary' : 'outline'}>
                         {request.isPaid ? 'Paid' : 'Unpaid'}
                       </Badge>
                     </TableCell>

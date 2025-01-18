@@ -4,8 +4,8 @@ export interface User {
   email: string;
   role: 'admin' | 'client' | 'provider';
   status: 'active' | 'blocked';
-  createdAt: string;
   isVerified: boolean;
+  createdAt: string;
 }
 
 export interface Service {
@@ -28,7 +28,7 @@ export interface Request {
   providerId: string;
   proposedPrice: number;
   status: 'pending' | 'in-progress' | 'completed' | 'cancelled';
+  isPaid: boolean;
   createdAt: string;
   completedAt?: string;
-  isPaid: boolean;
 }

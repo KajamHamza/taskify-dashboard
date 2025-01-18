@@ -6,6 +6,7 @@ import StatsCard from "@/components/dashboard/StatsCard";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { fetchServices, updateServiceStatus } from "@/services/services";
+import { Service } from "@/types";
 import { useToast } from "@/components/ui/use-toast";
 
 const Services = () => {
@@ -102,7 +103,7 @@ const Services = () => {
                     <TableCell>{service.rating.toFixed(1)}</TableCell>
                     <TableCell>{service.reviewCount}</TableCell>
                     <TableCell>
-                      <Badge variant={service.isActive ? 'success' : 'secondary'}>
+                      <Badge variant={service.isActive ? 'secondary' : 'outline'}>
                         {service.isActive ? 'Active' : 'Inactive'}
                       </Badge>
                     </TableCell>

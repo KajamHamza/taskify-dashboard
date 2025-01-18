@@ -100,12 +100,12 @@ const Users = () => {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={user.status === 'active' ? 'success' : 'destructive'}>
+                      <Badge variant={user.status === 'active' ? 'secondary' : 'destructive'}>
                         {user.status}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={user.isVerified ? 'success' : 'warning'}>
+                      <Badge variant={user.isVerified ? 'secondary' : 'outline'}>
                         {user.isVerified ? 'Verified' : 'Unverified'}
                       </Badge>
                     </TableCell>
