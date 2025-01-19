@@ -2,7 +2,6 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
-// Replace these values with your actual Firebase config
 const firebaseConfig = {
   apiKey: "your-api-key",
   authDomain: "your-auth-domain",
@@ -12,14 +11,26 @@ const firebaseConfig = {
   appId: "your-app-id"
 };
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
+// Initialize Firebase only once
+let app;
+let db;
+let auth;
 
-// Example helper functions for Firestore operations
+try {
+  app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  auth = getAuth(app);
+} catch (error) {
+  console.error("Error initializing Firebase:", error);
+}
+
+// Helper functions for Firestore operations
 export const createDocument = async (collectionName: string, data: any) => {
   try {
-    const docRef = await addDoc(collection(db, collectionName), data);
+    const docRef = await addDoc(collection(db, collectionName), {
+      ...data,
+      createdAt: new Date().toISOString()
+    });
     return docRef.id;
   } catch (error) {
     console.error("Error adding document: ", error);
