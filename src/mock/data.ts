@@ -26,7 +26,7 @@ export const mockUsers = [
     isVerified: false,
     createdAt: "2024-02-01T00:00:00Z"
   }
-] as const;
+];
 
 export const mockServices = [
   {
@@ -53,7 +53,7 @@ export const mockServices = [
     isActive: true,
     createdAt: "2024-01-20T00:00:00Z"
   }
-] as const;
+];
 
 export const mockRequests = [
   {
@@ -76,4 +76,4 @@ export const mockRequests = [
     isPaid: false,
     createdAt: "2024-02-10T00:00:00Z"
   }
-] as const;
+];
