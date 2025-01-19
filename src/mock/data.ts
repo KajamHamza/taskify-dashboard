@@ -3,8 +3,8 @@ export const mockUsers = [
     id: "1",
     name: "John Admin",
     email: "admin@example.com",
-    role: "admin",
-    status: "active",
+    role: "admin" as const,
+    status: "active" as const,
     isVerified: true,
     createdAt: "2024-01-01T00:00:00Z"
   },
@@ -12,8 +12,8 @@ export const mockUsers = [
     id: "2",
     name: "Sarah Provider",
     email: "provider@example.com",
-    role: "provider",
-    status: "active",
+    role: "provider" as const,
+    status: "active" as const,
     isVerified: true,
     createdAt: "2024-01-15T00:00:00Z"
   },
@@ -21,8 +21,8 @@ export const mockUsers = [
     id: "3",
     name: "Mike Client",
     email: "client@example.com",
-    role: "client",
-    status: "active",
+    role: "client" as const,
+    status: "active" as const,
     isVerified: false,
     createdAt: "2024-02-01T00:00:00Z"
   }
@@ -62,7 +62,7 @@ export const mockRequests = [
     clientId: "3",
     providerId: "2",
     proposedPrice: 950,
-    status: "in-progress",
+    status: "in-progress" as const,
     isPaid: true,
     createdAt: "2024-02-05T00:00:00Z"
   },
@@ -72,7 +72,7 @@ export const mockRequests = [
     clientId: "3",
     providerId: "2",
     proposedPrice: 480,
-    status: "pending",
+    status: "pending" as const,
     isPaid: false,
     createdAt: "2024-02-10T00:00:00Z"
   }

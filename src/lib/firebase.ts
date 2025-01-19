@@ -3,14 +3,34 @@ import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "",
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: ""
+  apiKey: "demo-mode",
+  authDomain: "demo-mode",
+  projectId: "demo-mode",
+  storageBucket: "demo-mode",
+  messagingSenderId: "demo-mode",
+  appId: "demo-mode"
 };
 
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
-export const auth = getAuth(app);
+let app;
+let db;
+let auth;
+
+try {
+  app = initializeApp(firebaseConfig);
+  db = getFirestore(app);
+  auth = getAuth(app);
+} catch (error) {
+  console.log('Using mock mode due to Firebase initialization error:', error);
+  // Create mock objects for Firebase services
+  db = {
+    collection: () => ({
+      getDocs: async () => ({ docs: [] })
+    })
+  };
+  auth = {
+    currentUser: null,
+    onAuthStateChanged: () => {}
+  };
+}
+
+export { db, auth };
