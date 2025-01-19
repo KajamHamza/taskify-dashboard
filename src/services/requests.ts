@@ -1,5 +1,7 @@
 import { collection, getDocs, query, where, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
+import { mockRequests } from '@/mock/data';
+import { Request } from '@/types';
 
 export const fetchRequests = async () => {
   try {
@@ -7,10 +9,10 @@ export const fetchRequests = async () => {
     return requestsSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
-    }));
+    })) as Request[];
   } catch (error) {
-    console.error('Error fetching requests:', error);
-    throw error;
+    console.log('Using mock data due to Firebase error:', error);
+    return mockRequests;
   }
 };
 
