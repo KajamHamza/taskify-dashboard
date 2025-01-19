@@ -21,15 +21,22 @@ try {
   auth = getAuth(app);
 } catch (error) {
   console.log('Using mock mode due to Firebase initialization error:', error);
-  // Create mock objects for Firebase services
+  // Create mock objects for Firebase services with better stream handling
   db = {
     collection: () => ({
-      getDocs: async () => ({ docs: [] })
+      getDocs: async () => ({ 
+        docs: [],
+        forEach: () => {},
+        [Symbol.iterator]: function* () { yield* []; }
+      })
     })
   };
   auth = {
     currentUser: null,
-    onAuthStateChanged: () => {}
+    onAuthStateChanged: (callback) => {
+      callback(null);
+      return () => {};
+    }
   };
 }
 
