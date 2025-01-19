@@ -1,38 +1,19 @@
-import { collection, getDocs, query, where, doc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
-import { mockUsers } from '@/mock/data';
-import { User } from '@/types';
+import { createDocument, getDocuments, updateDocument, deleteDocument } from '@/lib/firebase';
 
-export const fetchUsers = async () => {
-  try {
-    const usersSnapshot = await getDocs(collection(db, 'users'));
-    return usersSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as User[];
-  } catch (error) {
-    console.log('Using mock data due to Firebase error:', error);
-    return mockUsers;
-  }
+const COLLECTION_NAME = 'users';
+
+export const createUser = async (userData: any) => {
+  return await createDocument(COLLECTION_NAME, userData);
 };
 
-export const updateUserStatus = async (userId: string, status: 'active' | 'blocked') => {
-  try {
-    const userRef = doc(db, 'users', userId);
-    await updateDoc(userRef, { status });
-    return true;
-  } catch (error) {
-    console.error('Error updating user status:', error);
-    throw error;
-  }
+export const getAllUsers = async () => {
+  return await getDocuments(COLLECTION_NAME);
+};
+
+export const updateUser = async (userId: string, userData: any) => {
+  return await updateDocument(COLLECTION_NAME, userId, userData);
 };
 
 export const deleteUser = async (userId: string) => {
-  try {
-    await deleteDoc(doc(db, 'users', userId));
-    return true;
-  } catch (error) {
-    console.error('Error deleting user:', error);
-    throw error;
-  }
+  return await deleteDocument(COLLECTION_NAME, userId);
 };

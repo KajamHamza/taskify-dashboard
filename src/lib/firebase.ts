@@ -1,51 +1,65 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
+// Replace these values with your actual Firebase config
 const firebaseConfig = {
-  apiKey: "demo-mode",
-  authDomain: "demo-mode",
-  projectId: "demo-mode",
-  storageBucket: "demo-mode",
-  messagingSenderId: "demo-mode",
-  appId: "demo-mode"
+  apiKey: "your-api-key",
+  authDomain: "your-auth-domain",
+  projectId: "your-project-id",
+  storageBucket: "your-storage-bucket",
+  messagingSenderId: "your-messaging-sender-id",
+  appId: "your-app-id"
 };
 
-let app;
-let db;
-let auth;
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-try {
-  app = initializeApp(firebaseConfig);
-  db = getFirestore(app);
-  auth = getAuth(app);
-} catch (error) {
-  console.log('Using mock mode due to Firebase initialization error:', error);
-  // Create mock objects for Firebase services with better stream handling
-  db = {
-    collection: () => ({
-      getDocs: async () => ({
-        docs: [],
-        forEach: () => {},
-        // Implement a proper iterator that doesn't lock the stream
-        [Symbol.asyncIterator]: async function* () {
-          yield* [];
-        },
-        stream: () => new ReadableStream({
-          start(controller) {
-            controller.close();
-          }
-        })
-      })
-    })
-  };
-  auth = {
-    currentUser: null,
-    onAuthStateChanged: (callback) => {
-      callback(null);
-      return () => {};
-    }
-  };
-}
+// Example helper functions for Firestore operations
+export const createDocument = async (collectionName: string, data: any) => {
+  try {
+    const docRef = await addDoc(collection(db, collectionName), data);
+    return docRef.id;
+  } catch (error) {
+    console.error("Error adding document: ", error);
+    throw error;
+  }
+};
+
+export const getDocuments = async (collectionName: string) => {
+  try {
+    const querySnapshot = await getDocs(collection(db, collectionName));
+    return querySnapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    console.error("Error getting documents: ", error);
+    throw error;
+  }
+};
+
+export const updateDocument = async (collectionName: string, docId: string, data: any) => {
+  try {
+    const docRef = doc(db, collectionName, docId);
+    await updateDoc(docRef, data);
+    return true;
+  } catch (error) {
+    console.error("Error updating document: ", error);
+    throw error;
+  }
+};
+
+export const deleteDocument = async (collectionName: string, docId: string) => {
+  try {
+    const docRef = doc(db, collectionName, docId);
+    await deleteDoc(docRef);
+    return true;
+  } catch (error) {
+    console.error("Error deleting document: ", error);
+    throw error;
+  }
+};
 
 export { db, auth };
