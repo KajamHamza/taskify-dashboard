@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -24,10 +24,18 @@ try {
   // Create mock objects for Firebase services with better stream handling
   db = {
     collection: () => ({
-      getDocs: async () => ({ 
+      getDocs: async () => ({
         docs: [],
         forEach: () => {},
-        [Symbol.iterator]: function* () { yield* []; }
+        // Implement a proper iterator that doesn't lock the stream
+        [Symbol.asyncIterator]: async function* () {
+          yield* [];
+        },
+        stream: () => new ReadableStream({
+          start(controller) {
+            controller.close();
+          }
+        })
       })
     })
   };
