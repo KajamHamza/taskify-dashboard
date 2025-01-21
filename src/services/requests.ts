@@ -1,18 +1,28 @@
 import { collection, getDocs, query, where, doc, updateDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { mockRequests } from '@/mock/data';
-import { Request } from '@/types';
+import { ServiceRequest } from '@/types';
 
-export const fetchRequests = async () => {
+export const fetchRequests = async (): Promise<ServiceRequest[]> => {
   try {
-    const requestsSnapshot = await getDocs(collection(db, 'requests'));
-    return requestsSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as Request[];
+    const requestsSnapshot = await getDocs(collection(db, 'serviceRequests'));
+    return requestsSnapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        serviceId: data.serviceId || '', // Provide default values
+        clientId: data.clientId || '',
+        providerId: data.providerId || '',
+        proposedPrice: data.proposedPrice || 0,
+        status: data.status || '',
+        isPaid: data.isPaid || false,
+        createdAt: data.createdAt || new Date().toISOString(),
+        completedAt: data.completedAt || null, // Optional field
+        paymentIntentId: data.paymentIntentId || null, // Optional field
+      } as ServiceRequest;
+    });
   } catch (error) {
     console.log('Using mock data due to Firebase error:', error);
-    return mockRequests;
   }
 };
 

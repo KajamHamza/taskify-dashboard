@@ -6,7 +6,9 @@ export const mockUsers = [
     role: "admin" as const,
     status: "active" as const,
     isVerified: true,
-    createdAt: "2024-01-01T00:00:00Z"
+    createdAt: "2024-01-01T00:00:00Z",
+    phoneNumber: "+1234567890",
+    photoUrl: "https://example.com/john.jpg"
   },
   {
     id: "2",
@@ -15,7 +17,9 @@ export const mockUsers = [
     role: "provider" as const,
     status: "active" as const,
     isVerified: true,
-    createdAt: "2024-01-15T00:00:00Z"
+    createdAt: "2024-01-15T00:00:00Z",
+    phoneNumber: "+0987654321",
+    photoUrl: "https://example.com/sarah.jpg"
   },
   {
     id: "3",
@@ -24,7 +28,9 @@ export const mockUsers = [
     role: "client" as const,
     status: "active" as const,
     isVerified: false,
-    createdAt: "2024-02-01T00:00:00Z"
+    createdAt: "2024-02-01T00:00:00Z",
+    phoneNumber: "+1122334455",
+    photoUrl: "https://example.com/mike.jpg"
   }
 ];
 
@@ -35,11 +41,16 @@ export const mockServices = [
     providerId: "2",
     category: "Development",
     price: 1000,
-    location: "Remote",
+    location: {
+      latitude: 40.7128,
+      longitude: -74.0060
+    },
     rating: 4.8,
     reviewCount: 25,
     isActive: true,
-    createdAt: "2024-01-10T00:00:00Z"
+    createdAt: "2024-01-10T00:00:00Z",
+    description: "Professional web development services.",
+    images: ["https://example.com/web1.jpg", "https://example.com/web2.jpg"]
   },
   {
     id: "2",
@@ -47,11 +58,16 @@ export const mockServices = [
     providerId: "2",
     category: "Design",
     price: 500,
-    location: "Remote",
+    location: {
+      latitude: 34.0522,
+      longitude: -118.2437
+    },
     rating: 4.5,
     reviewCount: 15,
     isActive: true,
-    createdAt: "2024-01-20T00:00:00Z"
+    createdAt: "2024-01-20T00:00:00Z",
+    description: "Creative logo design services.",
+    images: ["https://example.com/logo1.jpg", "https://example.com/logo2.jpg"]
   }
 ];
 
@@ -64,7 +80,9 @@ export const mockRequests = [
     proposedPrice: 950,
     status: "in-progress" as const,
     isPaid: true,
-    createdAt: "2024-02-05T00:00:00Z"
+    createdAt: "2024-02-05T00:00:00Z",
+    completedAt: "2024-02-15T00:00:00Z",
+    paymentIntentId: "pi_123456789"
   },
   {
     id: "2",
@@ -74,6 +92,8 @@ export const mockRequests = [
     proposedPrice: 480,
     status: "pending" as const,
     isPaid: false,
-    createdAt: "2024-02-10T00:00:00Z"
+    createdAt: "2024-02-10T00:00:00Z",
+    completedAt: null,
+    paymentIntentId: null
   }
 ];

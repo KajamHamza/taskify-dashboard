@@ -8,37 +8,45 @@ import { fetchDashboardStats } from "@/services/stats";
 const Overview = () => {
   const { data: stats, isLoading } = useQuery({
     queryKey: ['dashboardStats'],
-    queryFn: fetchDashboardStats
+    queryFn: fetchDashboardStats,
   });
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
+  // Transform the stats data if necessary
+  const transformedStats = {
+    totalUsers: stats?.totalUsers || 0,
+    totalServices: stats?.totalServices || 0,
+    totalRequests: stats?.totalRequests || 0,
+    totalRevenue: stats?.totalRevenue || 0,
+  };
+
   return (
     <div className="space-y-6">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <StatsCard
           title="Total Users"
-          value={stats?.totalUsers.toString() || "0"}
+          value={transformedStats.totalUsers.toString()}
           icon={Users}
           description="+20.1% from last month"
         />
         <StatsCard
           title="Total Services"
-          value={stats?.totalServices.toString() || "0"}
+          value={transformedStats.totalServices.toString()}
           icon={ShoppingBag}
           description="+15% from last month"
         />
         <StatsCard
           title="Active Requests"
-          value={stats?.totalRequests.toString() || "0"}
+          value={transformedStats.totalRequests.toString()}
           icon={FileText}
           description="12 pending approval"
         />
         <StatsCard
           title="Revenue"
-          value={`$${(stats?.totalRevenue || 0).toLocaleString()}`}
+          value={`$${transformedStats.totalRevenue.toLocaleString()}`}
           icon={DollarSign}
           description="+25% from last month"
         />

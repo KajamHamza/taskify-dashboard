@@ -6,38 +6,38 @@ import Header from "@/components/dashboard/Header";
 import StatsCard from "@/components/dashboard/StatsCard";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { fetchUsers, updateUserStatus } from "@/services/users";
+import { fetchUsers, updateUserVerification } from "@/services/users";
 import { User } from "@/types";
 import { useToast } from "@/components/ui/use-toast";
 
 const Users = () => {
   const { toast } = useToast();
-  const { data: users, isLoading, refetch } = useQuery({
+  const { data: users, isLoading, refetch } = useQuery<User[]>({
     queryKey: ['users'],
-    queryFn: fetchUsers
+    queryFn: fetchUsers,
   });
 
-  const handleStatusUpdate = async (userId: string, newStatus: 'active' | 'blocked') => {
+  const handleVerificationUpdate = async (userId: string, isVerified: boolean) => {
     try {
-      await updateUserStatus(userId, newStatus);
+      await updateUserVerification(userId, isVerified);
       toast({
-        title: "Status Updated",
-        description: `User status has been updated to ${newStatus}`,
+        title: "Verification Updated",
+        description: `User verification has been updated to ${isVerified ? 'Verified' : 'Unverified'}`,
       });
-      refetch();
+      refetch(); // Refetch users to update the UI
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to update user status",
+        description: "Failed to update user verification",
         variant: "destructive",
       });
     }
   };
 
-  const totalClients = users?.filter(user => user.role === 'client').length || 0;
-  const totalProviders = users?.filter(user => user.role === 'provider').length || 0;
-  const pendingApprovals = users?.filter(user => user.role === 'provider' && !user.isVerified).length || 0;
-  const blockedUsers = users?.filter(user => user.status === 'blocked').length || 0;
+  // Calculate statistics
+  const totalClients = users?.filter((user) => user.userType === 'UserType.client').length || 0;
+  const totalProviders = users?.filter((user) => user.userType === 'UserType.serviceProvider').length || 0;
+  const pendingApprovals = users?.filter((user) => user.userType === 'UserType.serviceProvider' && !user.isVerified).length || 0;
 
   return (
     <div className="min-h-screen dashboard-gradient">
@@ -45,6 +45,7 @@ const Users = () => {
       <Header />
       <main className="pl-64 pt-16">
         <div className="p-6">
+          {/* Stats Cards */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
             <StatsCard
               title="Total Clients"
@@ -64,14 +65,9 @@ const Users = () => {
               icon={UsersIcon}
               description="Service providers awaiting approval"
             />
-            <StatsCard
-              title="Blocked Users"
-              value={blockedUsers.toString()}
-              icon={UsersIcon}
-              description="Total blocked accounts"
-            />
           </div>
 
+          {/* Users Table */}
           <div className="bg-white rounded-lg shadow">
             <Table>
               <TableHeader>
@@ -79,7 +75,6 @@ const Users = () => {
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Role</TableHead>
-                  <TableHead>Status</TableHead>
                   <TableHead>Verified</TableHead>
                   <TableHead>Created At</TableHead>
                   <TableHead>Actions</TableHead>
@@ -88,38 +83,51 @@ const Users = () => {
               <TableBody>
                 {isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={7} className="text-center">Loading...</TableCell>
-                  </TableRow>
-                ) : users?.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell>{user.name}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>
-                      <Badge variant={user.role === 'admin' ? 'default' : user.role === 'provider' ? 'secondary' : 'outline'}>
-                        {user.role}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={user.status === 'active' ? 'secondary' : 'destructive'}>
-                        {user.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant={user.isVerified ? 'secondary' : 'outline'}>
-                        {user.isVerified ? 'Verified' : 'Unverified'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
-                    <TableCell>
-                      <button
-                        onClick={() => handleStatusUpdate(user.id, user.status === 'active' ? 'blocked' : 'active')}
-                        className="text-sm text-blue-600 hover:text-blue-800"
-                      >
-                        {user.status === 'active' ? 'Block' : 'Unblock'}
-                      </button>
+                    <TableCell colSpan={6} className="text-center">
+                      Loading...
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : users?.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center">
+                      No users found.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  users?.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableCell>{user.name}</TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={
+                            user.userType === 'UserType.admin'
+                              ? 'default'
+                              : user.userType === 'UserType.serviceProvider'
+                              ? 'secondary'
+                              : 'outline'
+                          }
+                        >
+                          {user.userType}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={user.isVerified ? 'secondary' : 'outline'}>
+                          {user.isVerified ? 'Verified' : 'Unverified'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
+                      <TableCell>
+                        <button
+                          onClick={() => handleVerificationUpdate(user.id, !user.isVerified)}
+                          className="text-sm text-blue-600 hover:text-blue-800"
+                        >
+                          {user.isVerified ? 'Unverify' : 'Verify'}
+                        </button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </div>

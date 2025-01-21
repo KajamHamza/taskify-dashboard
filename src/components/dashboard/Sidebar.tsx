@@ -1,4 +1,5 @@
-import { Home, Users, Box, FileText } from "lucide-react";
+import Categories from "@/pages/Categories";
+import { Home, Users, Box, FileText, TypeIcon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const Sidebar = () => {
@@ -9,12 +10,13 @@ const Sidebar = () => {
     { icon: Users, label: "Users", path: "/users" },
     { icon: Box, label: "Services", path: "/services" },
     { icon: FileText, label: "Requests", path: "/requests" },
+    { icon: TypeIcon, label: "Categories", path: "/categories" },
   ];
 
   return (
     <div className="h-screen w-64 bg-white border-r border-gray-200 fixed left-0 top-0">
       <div className="p-6">
-        <h1 className="text-2xl font-bold text-primary">Admin Panel</h1>
+        <h1 className="text-2xl font-bold text-primary">Taskify Panel</h1>
       </div>
       <nav className="mt-6">
         {menuItems.map((item) => {

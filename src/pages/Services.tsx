@@ -5,34 +5,16 @@ import Header from "@/components/dashboard/Header";
 import StatsCard from "@/components/dashboard/StatsCard";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { fetchServices, updateServiceStatus } from "@/services/services";
+import { fetchServices } from "@/services/services";
 import { Service } from "@/types";
-import { useToast } from "@/components/ui/use-toast";
 
 const Services = () => {
-  const { toast } = useToast();
-  const { data: services, isLoading, refetch } = useQuery({
+  const { data: services, isLoading } = useQuery<Service[]>({
     queryKey: ['services'],
-    queryFn: fetchServices
+    queryFn: fetchServices,
   });
 
-  const handleStatusUpdate = async (serviceId: string, isActive: boolean) => {
-    try {
-      await updateServiceStatus(serviceId, isActive);
-      toast({
-        title: "Status Updated",
-        description: `Service has been ${isActive ? 'activated' : 'deactivated'}`,
-      });
-      refetch();
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to update service status",
-        variant: "destructive",
-      });
-    }
-  };
-
+  // Calculate statistics
   const totalServices = services?.length || 0;
   const activeServices = services?.filter(service => service.isActive).length || 0;
   const averageRating = services?.reduce((acc, service) => acc + service.rating, 0) / (totalServices || 1);
@@ -49,12 +31,13 @@ const Services = () => {
       <Header />
       <main className="pl-64 pt-16">
         <div className="p-6">
+          {/* Stats Cards */}
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-6">
             <StatsCard
               title="Total Services"
               value={totalServices.toString()}
               icon={Box}
-              description="Active services"
+              description="All services"
             />
             <StatsCard
               title="Active Services"
@@ -76,6 +59,7 @@ const Services = () => {
             />
           </div>
 
+          {/* Services Table */}
           <div className="bg-white rounded-lg shadow">
             <Table>
               <TableHeader>
@@ -87,37 +71,34 @@ const Services = () => {
                   <TableHead>Reviews</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Created At</TableHead>
-                  <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center">Loading...</TableCell>
+                    <TableCell colSpan={7} className="text-center">Loading...</TableCell>
                   </TableRow>
-                ) : services?.map((service) => (
-                  <TableRow key={service.id}>
-                    <TableCell>{service.title}</TableCell>
-                    <TableCell>{service.category}</TableCell>
-                    <TableCell>${service.price}</TableCell>
-                    <TableCell>{service.rating.toFixed(1)}</TableCell>
-                    <TableCell>{service.reviewCount}</TableCell>
-                    <TableCell>
-                      <Badge variant={service.isActive ? 'secondary' : 'outline'}>
-                        {service.isActive ? 'Active' : 'Inactive'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{new Date(service.createdAt).toLocaleDateString()}</TableCell>
-                    <TableCell>
-                      <button
-                        onClick={() => handleStatusUpdate(service.id, !service.isActive)}
-                        className="text-sm text-blue-600 hover:text-blue-800"
-                      >
-                        {service.isActive ? 'Deactivate' : 'Activate'}
-                      </button>
-                    </TableCell>
+                ) : services?.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="text-center">No services found.</TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                  services?.map((service) => (
+                    <TableRow key={service.id}>
+                      <TableCell>{service.title}</TableCell>
+                      <TableCell>{service.category.name}</TableCell>
+                      <TableCell>${service.price}</TableCell>
+                      <TableCell>{service.rating.toFixed(1)}</TableCell>
+                      <TableCell>{service.reviewCount}</TableCell>
+                      <TableCell>
+                        <Badge variant={service.isActive ? 'secondary' : 'outline'}>
+                          {service.isActive ? 'Active' : 'Inactive'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>{new Date(service.createdAt).toLocaleDateString()}</TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </div>

@@ -1,50 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getAllUsers, createUser, updateUser, deleteUser } from '@/services/users';
-import { toast } from '@/components/ui/use-toast';
+import { useQuery } from '@tanstack/react-query';
+import { getAllUsers } from '@/services/users'; // Ensure this import is correct
+import { User } from '@/types'; // Import the User interface
 
 const UserList = () => {
-  const queryClient = useQueryClient();
-
   // Fetch users
-  const { data: users, isLoading } = useQuery({
+  const { data: users, isLoading } = useQuery<User[]>({
     queryKey: ['users'],
-    queryFn: getAllUsers
-  });
-
-  // Create user mutation
-  const createUserMutation = useMutation({
-    mutationFn: createUser,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-      toast({
-        title: "Success",
-        description: "User created successfully",
-      });
-    }
-  });
-
-  // Update user mutation
-  const updateUserMutation = useMutation({
-    mutationFn: ({ userId, data }) => updateUser(userId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-      toast({
-        title: "Success",
-        description: "User updated successfully",
-      });
-    }
-  });
-
-  // Delete user mutation
-  const deleteUserMutation = useMutation({
-    mutationFn: deleteUser,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
-      toast({
-        title: "Success",
-        description: "User deleted successfully",
-      });
-    }
+    queryFn: getAllUsers,
   });
 
   if (isLoading) return <div>Loading...</div>;
@@ -53,27 +15,21 @@ const UserList = () => {
     <div>
       <h2 className="text-2xl font-bold mb-4">Users</h2>
       <div className="space-y-4">
-        {users?.map((user: any) => (
+        {users?.map((user) => (
           <div key={user.id} className="p-4 border rounded-lg">
-            <p>{user.name}</p>
-            <p>{user.email}</p>
-            <div className="mt-2 space-x-2">
-              <button
-                onClick={() => updateUserMutation.mutate({
-                  userId: user.id,
-                  data: { /* updated data */ }
-                })}
-                className="text-blue-600 hover:text-blue-800"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => deleteUserMutation.mutate(user.id)}
-                className="text-red-600 hover:text-red-800"
-              >
-                Delete
-              </button>
-            </div>
+            <p><strong>Name:</strong> {user.name}</p>
+            <p><strong>Email:</strong> {user.email}</p>
+            <p><strong>Role:</strong> {user.role}</p>
+            <p><strong>Verified:</strong> {user.isVerified ? 'Yes' : 'No'}</p>
+            <p><strong>Created At:</strong> {new Date(user.createdAt).toLocaleDateString()}</p>
+            {user.phoneNumber && <p><strong>Phone:</strong> {user.phoneNumber}</p>}
+            {user.photoUrl && (
+              <img
+                src={user.photoUrl}
+                alt={`${user.name}'s profile`}
+                className="w-16 h-16 rounded-full mt-2"
+              />
+            )}
           </div>
         ))}
       </div>

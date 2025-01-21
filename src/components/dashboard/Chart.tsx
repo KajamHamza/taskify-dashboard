@@ -6,20 +6,41 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-
-const data = [
-  { date: "Jan", value: 100 },
-  { date: "Feb", value: 200 },
-  { date: "Mar", value: 150 },
-  { date: "Apr", value: 300 },
-  { date: "May", value: 250 },
-  { date: "Jun", value: 400 },
-];
+import { useQuery } from "@tanstack/react-query";
+import { fetchDashboardStats } from "@/services/stats";
 
 const Chart = () => {
+  // Fetch dashboard stats
+  const { data: stats, isLoading, isError } = useQuery({
+    queryKey: ['dashboardStats'],
+    queryFn: fetchDashboardStats,
+  });
+
+  // Transform the request data into the format expected by the chart
+  const chartData = stats?.requestData?.map((item) => ({
+    date: item.date,
+    value: item.count,
+  })) || [];
+
+  // Debugging logs
+  console.log('Fetched Stats:', stats);
+  console.log('Chart Data:', chartData);
+
+  if (isLoading) {
+    return <div>Loading chart data...</div>;
+  }
+
+  if (isError) {
+    return <div>Failed to load chart data.</div>;
+  }
+
+  if (chartData.length === 0) {
+    return <div>No data available for the chart.</div>;
+  }
+
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <AreaChart data={data}>
+      <AreaChart data={chartData}>
         <XAxis
           dataKey="date"
           stroke="#888888"
